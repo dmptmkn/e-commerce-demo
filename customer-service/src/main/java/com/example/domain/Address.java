@@ -89,7 +89,7 @@ public class Address {
         this.apartment = normalizedApartmentOrNull;
     }
 
-    private boolean isBlankOrNull(String field) {
+    private static boolean isBlankOrNull(String field) {
         return field == null || field.isBlank();
     }
 }

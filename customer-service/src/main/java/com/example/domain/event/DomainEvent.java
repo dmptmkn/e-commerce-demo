@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 public interface DomainEvent {
-    UUID aggregateId();
-    Instant occurredAt();
-    String type();
+    UUID getAggregateId();
+    Instant getOccurredAt();
+    String getType();
 }

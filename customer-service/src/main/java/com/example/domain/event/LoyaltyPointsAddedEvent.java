@@ -3,13 +3,11 @@ package com.example.domain.event;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-import lombok.experimental.Accessors;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Value
-@Accessors(fluent = true)
 public class LoyaltyPointsAddedEvent implements DomainEvent {
 
     UUID aggregateId;
@@ -28,7 +26,7 @@ public class LoyaltyPointsAddedEvent implements DomainEvent {
     }
 
     @Override
-    public String type() {
+    public String getType() {
         return "LOYALTY_POINTS_ADDED";
     }
 }

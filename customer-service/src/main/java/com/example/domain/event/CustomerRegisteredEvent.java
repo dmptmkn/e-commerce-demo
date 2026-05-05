@@ -3,13 +3,11 @@ package com.example.domain.event;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-import lombok.experimental.Accessors;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Value
-@Accessors(fluent = true)
 public class CustomerRegisteredEvent implements DomainEvent {
 
     UUID aggregateId;
@@ -31,7 +29,7 @@ public class CustomerRegisteredEvent implements DomainEvent {
     }
 
     @Override
-    public String type() {
+    public String getType() {
         return "CUSTOMER_REGISTERED";
     }
 }
