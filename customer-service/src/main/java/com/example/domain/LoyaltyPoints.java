@@ -1,5 +1,7 @@
 package com.example.domain;
 
+import com.example.domain.exception.InsufficientLoyaltyPointsException;
+import com.example.domain.exception.InvalidLoyaltyPointsFormatException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -10,11 +12,11 @@ public class LoyaltyPoints {
 
     public static LoyaltyPoints ZERO = new LoyaltyPoints(0);
 
-    Integer value;
+    int value;
 
     public static LoyaltyPoints of(int points) {
         if (points < 0) {
-            throw new IllegalArgumentException("Loyalty points must not be negative");
+            throw new InvalidLoyaltyPointsFormatException("Loyalty points must not be negative");
         }
         return new LoyaltyPoints(points);
     }
@@ -27,12 +29,21 @@ public class LoyaltyPoints {
         return of(this.value + points);
     }
 
-    public LoyaltyPoints subtract(LoyaltyPoints other) {
-        return of(this.value - other.value);
+    public LoyaltyPoints subtract(int points) {
+        if (points < 0) {
+            throw new InvalidLoyaltyPointsFormatException("Loyalty points must not be negative");
+        }
+
+        var newValue = this.value - points;
+        if (newValue < 0) {
+            throw new InsufficientLoyaltyPointsException("Insufficient loyalty points");
+        }
+
+        return LoyaltyPoints.of(newValue);
     }
 
-    public LoyaltyPoints subtract(int points) {
-        return of(this.value - points);
+    public LoyaltyPoints subtract(LoyaltyPoints other) {
+        return subtract(other.value);
     }
 
     public boolean isGreaterThan(LoyaltyPoints other) {
