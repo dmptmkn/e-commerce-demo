@@ -20,7 +20,9 @@ public class CustomerName {
 
         var normalized = name.trim();
         if (normalized.length() > MAX_LENGTH) {
-            throw new InvalidCustomerNameException("Customer name is too long");
+            throw new InvalidCustomerNameException(
+                    "Customer name must not be longer than %d characters. Yours is %d"
+                            .formatted(MAX_LENGTH, normalized.length()));
         }
 
         return new CustomerName(normalized);

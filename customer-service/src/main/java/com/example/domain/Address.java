@@ -33,63 +33,53 @@ public class Address {
             String street,
             String building,
             String apartment) {
-        if (isBlankOrNull(country)) {
-            throw new InvalidAddressException("Country is required");
-        }
-        var normalizedCountry = country.trim().toUpperCase();
-        if (normalizedCountry.length() > COUNTRY_MAX_LENGTH) {
-            throw new InvalidAddressException("Country name is too long");
-        }
+        checkIfNullOrBlank("Country", country);
+        var normalizedCountry = country.trim();
+        checkLength("Country name", normalizedCountry, COUNTRY_MAX_LENGTH);
         this.country = normalizedCountry;
 
-        if (isBlankOrNull(zipcode)) {
-            throw new InvalidAddressException("Zipcode is required");
-        }
+        checkIfNullOrBlank("Zipcode", zipcode);
         var normalizedZipcode = zipcode.trim().toUpperCase();
         if (!ZIPCODE_PATTERN.matcher(normalizedZipcode).matches()) {
             throw new InvalidAddressException("Zipcode format is invalid");
         }
-        if (normalizedZipcode.length() > ZIPCODE_MAX_LENGTH) {
-            throw new InvalidAddressException("Zipcode is too long");
-        }
+        checkLength("Zipcode", normalizedZipcode, ZIPCODE_MAX_LENGTH);
         this.zipcode = normalizedZipcode;
 
-        if (isBlankOrNull(city)) {
-            throw new InvalidAddressException("City is required");
-        }
-        var normalizedCity = city.trim().toUpperCase();
-        if (normalizedCity.length() > CITY_MAX_LENGTH) {
-            throw new InvalidAddressException("City name is too long");
-        }
+        checkIfNullOrBlank("City", city);
+        var normalizedCity = city.trim();
+        checkLength("City name", normalizedCity, CITY_MAX_LENGTH);
         this.city = normalizedCity;
 
-        if (isBlankOrNull(street)) {
-            throw new InvalidAddressException("Street is required");
-        }
-        var normalizedStreet = street.trim().toUpperCase();
-        if (normalizedStreet.length() > STREET_MAX_LENGTH) {
-            throw new InvalidAddressException("Street name is too long");
-        }
+        checkIfNullOrBlank("Street", street);
+        var normalizedStreet = street.trim();
+        checkLength("Street name", normalizedStreet, STREET_MAX_LENGTH);
         this.street = normalizedStreet;
 
-        if (isBlankOrNull(building)) {
-            throw new InvalidAddressException("Building is required");
-        }
+        checkIfNullOrBlank("Building", building);
         var normalizedBuilding = building.trim().toUpperCase();
-        if (normalizedBuilding.length() > BUILDING_MAX_LENGTH) {
-            throw new InvalidAddressException("Building number is too long");
-        }
+        checkLength("Building number", normalizedBuilding, BUILDING_MAX_LENGTH);
         this.building = normalizedBuilding;
 
-        var normalizedApartmentOrNull = apartment == null ? null : apartment.trim().toUpperCase();
-        if (normalizedApartmentOrNull != null &&
-                normalizedApartmentOrNull.length() > APARTMENT_MAX_LENGTH) {
-            throw new InvalidAddressException("Apartment number is too long");
+        var normalizedApartment = apartment == null ? null : apartment.trim().toUpperCase();
+        if (normalizedApartment != null) {
+            checkLength("Apartment number", normalizedApartment, APARTMENT_MAX_LENGTH);
         }
-        this.apartment = normalizedApartmentOrNull;
+        this.apartment = normalizedApartment;
     }
 
-    private static boolean isBlankOrNull(String field) {
-        return field == null || field.isBlank();
+    private static void checkIfNullOrBlank(String fieldName, String value) {
+        if (value == null || value.isBlank()) {
+            throw new InvalidAddressException("%s is required".formatted(fieldName));
+        }
+    }
+
+    private static void checkLength(String fieldName, String value, int maxLength) {
+        if (value.length() > maxLength) {
+            throw new InvalidAddressException(
+                    "%s must not be longer than %d characters, yours is %d"
+                            .formatted(fieldName, maxLength, value.length())
+            );
+        }
     }
 }

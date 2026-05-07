@@ -15,7 +15,6 @@ public class PhoneNumber {
     private static final Pattern PHONE_PATTERN = Pattern.compile(PHONE_REGEX);
     private static final int MAX_LENGTH = 30;
 
-
     String value;
 
     public static PhoneNumber of(String rawNumber) {
@@ -25,10 +24,15 @@ public class PhoneNumber {
 
         var normalized = rawNumber.trim();
         if (normalized.length() > MAX_LENGTH) {
-            throw new InvalidPhoneNumberException("Phone number is too long");
+            throw new InvalidPhoneNumberException(
+                    "Phone number must not be longer than %d characters. Yours is %d"
+                            .formatted(MAX_LENGTH, normalized.length())
+            );
         }
         if (!PHONE_PATTERN.matcher(normalized).matches()) {
-            throw new InvalidPhoneNumberException("Invalid phone number format");
+            throw new InvalidPhoneNumberException(
+                    "Phone number %s doesn't match the required pattern".formatted(normalized)
+            );
         }
 
         return new PhoneNumber(normalized);

@@ -15,9 +15,7 @@ public class LoyaltyPoints {
     int value;
 
     public static LoyaltyPoints of(int points) {
-        if (points < 0) {
-            throw new InvalidLoyaltyPointsFormatException("Loyalty points must not be negative");
-        }
+        checkNotNegative(points);
         return new LoyaltyPoints(points);
     }
 
@@ -30,13 +28,11 @@ public class LoyaltyPoints {
     }
 
     public LoyaltyPoints subtract(int points) {
-        if (points < 0) {
-            throw new InvalidLoyaltyPointsFormatException("Loyalty points must not be negative");
-        }
+        checkNotNegative(points);
 
         var newValue = this.value - points;
         if (newValue < 0) {
-            throw new InsufficientLoyaltyPointsException("Insufficient loyalty points");
+            throw new InsufficientLoyaltyPointsException(this.value, points);
         }
 
         return LoyaltyPoints.of(newValue);
@@ -56,5 +52,11 @@ public class LoyaltyPoints {
 
     public boolean isZero() {
         return value == 0;
+    }
+
+    private static void checkNotNegative(int points) {
+        if (points < 0) {
+            throw new InvalidLoyaltyPointsFormatException("Loyalty points must not be negative");
+        }
     }
 }

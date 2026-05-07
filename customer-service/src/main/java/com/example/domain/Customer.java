@@ -83,7 +83,7 @@ public class Customer {
 
     public void changeEmail(Email newEmail) {
         if (this.email.equals(newEmail)) {
-            throw new SameEmailException("New email must be different from the existing one");
+            throw new SameEmailException(newEmail);
         }
 
         var oldEmail = this.email;
@@ -99,7 +99,7 @@ public class Customer {
 
     public void changePhoneNumber(PhoneNumber newNumber) {
         if (this.phone.equals(newNumber)) {
-            throw new SamePhoneNumberException("New phone number must be different from the existing one");
+            throw new SamePhoneNumberException(newNumber);
         }
 
         var oldPhone = this.phone;
@@ -115,7 +115,7 @@ public class Customer {
 
     public void changeName(CustomerName newName) {
         if (this.name.equals(newName)) {
-            throw new SameNameException("New name must be different from the existing one");
+            throw new SameNameException(newName);
         }
 
         var oldName = this.name;
@@ -131,7 +131,7 @@ public class Customer {
 
     public void changeAddress(Address newAddress) {
         if (this.address.equals(newAddress)) {
-            throw new SameAddressException("New address must be different from the existing one");
+            throw new SameAddressException(newAddress);
         }
 
         this.address = newAddress;
@@ -150,7 +150,7 @@ public class Customer {
 
     public void changeStatus(CustomerStatus newStatus) {
         if (this.status == newStatus) {
-            throw new SameStatusException("New status must be different from the existing one");
+            throw new SameStatusException(newStatus);
         }
 
         this.status = newStatus;

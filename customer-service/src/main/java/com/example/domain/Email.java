@@ -24,11 +24,15 @@ public class Email {
 
         var normalized = rawEmail.trim().toLowerCase();
         if (normalized.length() > MAX_LENGTH) {
-            throw new InvalidEmailException("Email is too long");
+            throw new InvalidEmailException(
+                    "Email must not be longer than %d characters. Yours is %d"
+                            .formatted(MAX_LENGTH, normalized.length())
+            );
         }
 
         if (!EMAIL_PATTERN.matcher(normalized).matches()) {
-            throw new InvalidEmailException("Invalid email format");
+            throw new InvalidEmailException(
+                    "Email %s doesn't match the required pattern".formatted(normalized));
         }
 
         return new Email(normalized);
