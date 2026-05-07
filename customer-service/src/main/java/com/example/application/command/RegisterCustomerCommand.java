@@ -1,12 +1,13 @@
 package com.example.application.command;
 
-public record RegisterCustomerCommand(String email,
-                                      String phone,
-                                      String name,
-                                      String country,
-                                      String zipcode,
-                                      String city,
-                                      String street,
-                                      String building,
-                                      String apartment) {
+import com.example.domain.Address;
+import com.example.domain.CustomerName;
+import com.example.domain.Email;
+import com.example.domain.PhoneNumber;
+import jakarta.validation.constraints.NotNull;
+
+public record RegisterCustomerCommand(@NotNull Email email,
+                                      @NotNull PhoneNumber phone,
+                                      @NotNull CustomerName name,
+                                      @NotNull Address address) {
 }
