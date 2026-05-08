@@ -2,11 +2,13 @@ spring:
   application:
     name: customer-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/customer
-    username: customer
-    password: postgres
+    url:
+    username:
+    password:
+  cache:
+    type: redis
   jpa:
-    show-sql: false
+    show-sql: true
     hibernate:
       ddl-auto: none
     properties:
@@ -24,11 +26,26 @@ spring:
       acks: all
       properties:
         enable.idempotence: true
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+    timeout: 3000
 
 logging:
   level:
     root: INFO
     com.example.infrastructure.messaging.OutboxProcessor: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,beans
+  metrics:
+    export:
+      prometheus:
+        enabled: true
 
 kafka:
   topics:

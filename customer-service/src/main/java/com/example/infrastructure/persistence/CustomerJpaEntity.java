@@ -4,6 +4,7 @@ import com.example.domain.CustomerStatus;
 import com.example.domain.Email;
 import com.example.domain.LoyaltyPoints;
 import com.example.domain.PhoneNumber;
+import com.example.domain.UserName;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -33,8 +34,11 @@ public class CustomerJpaEntity extends BaseEntity {
     @Column(name = "phone", nullable = false, unique = true)
     private PhoneNumber phone;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "username", nullable = false, unique = true)
+    private UserName userName;
+
+    @Embedded
+    private FullNameJpaEmbeddable fullName;
 
     @Column(name = "status", nullable = false)
     @Enumerated(value = EnumType.STRING)

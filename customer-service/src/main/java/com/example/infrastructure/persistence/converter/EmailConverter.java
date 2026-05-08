@@ -8,8 +8,8 @@ import jakarta.persistence.Converter;
 public class EmailConverter implements AttributeConverter<Email, String> {
 
     @Override
-    public String convertToDatabaseColumn(Email email) {
-        return email == null ? null : email.getValue();
+    public String convertToDatabaseColumn(Email attribute) {
+        return attribute == null ? null : attribute.getValue();
     }
 
     @Override

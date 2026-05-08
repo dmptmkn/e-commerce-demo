@@ -8,8 +8,8 @@ import jakarta.persistence.Converter;
 public class LoyaltyPointsConverter implements AttributeConverter<LoyaltyPoints, Integer> {
 
     @Override
-    public Integer convertToDatabaseColumn(LoyaltyPoints loyaltyPoints) {
-        return loyaltyPoints == null ? null : loyaltyPoints.getValue();
+    public Integer convertToDatabaseColumn(LoyaltyPoints attribute) {
+        return attribute == null ? null : attribute.getValue();
     }
 
     @Override

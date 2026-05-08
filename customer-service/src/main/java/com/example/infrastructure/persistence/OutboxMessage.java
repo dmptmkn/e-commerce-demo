@@ -1,10 +1,7 @@
 package com.example.infrastructure.persistence;
 
-import com.example.infrastructure.messaging.EventType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,8 +27,7 @@ public class OutboxMessage {
     @Column(name = "aggregate_id", nullable = false)
     private String aggregateId;
     @Column(name = "event_type", nullable = false)
-    @Enumerated(value = EnumType.STRING)
-    private EventType eventType;
+    private String eventType;
     @Column(columnDefinition = "TEXT", nullable = false)
     private String payload;
     @CreationTimestamp
@@ -40,7 +36,7 @@ public class OutboxMessage {
     private boolean sent;
 
     @Builder
-    private OutboxMessage(String aggregateId, EventType eventType, String payload) {
+    private OutboxMessage(String aggregateId, String eventType, String payload) {
         this.aggregateId = aggregateId;
         this.eventType = eventType;
         this.payload = payload;

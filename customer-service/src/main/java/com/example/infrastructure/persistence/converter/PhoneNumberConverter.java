@@ -16,4 +16,5 @@ public class PhoneNumberConverter implements AttributeConverter<PhoneNumber, Str
     public PhoneNumber convertToEntityAttribute(String dbData) {
         return dbData == null ? null : PhoneNumber.of(dbData);
     }
+
 }
