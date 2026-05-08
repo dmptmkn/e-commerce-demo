@@ -7,13 +7,13 @@ import lombok.Value;
 
 @Value
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class CustomerName {
+public class UserName {
 
-    private static final int MAX_LENGTH = 255;
+    private static final int MAX_LENGTH = 100;
 
     String value;
 
-    public static CustomerName of(String name) {
+    public static UserName of(String name) {
         if (name == null || name.isBlank()) {
             throw new InvalidCustomerNameException("Customer name is required");
         }
@@ -25,6 +25,6 @@ public class CustomerName {
                             .formatted(MAX_LENGTH, normalized.length()));
         }
 
-        return new CustomerName(normalized);
+        return new UserName(normalized);
     }
 }

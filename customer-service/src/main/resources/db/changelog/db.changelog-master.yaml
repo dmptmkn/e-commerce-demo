@@ -2,4 +2,6 @@ databaseChangeLog:
   - include:
       file: db/changelog/001-initial-schema.sql
   - include:
-     file: db/changelog/002-add-outbox-table.sql
+      file: db/changelog/002-add-outbox-table.sql
+  - include:
+      file: db/changelog/003-change-customer-schema.sql

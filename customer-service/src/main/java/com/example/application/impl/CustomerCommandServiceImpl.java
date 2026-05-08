@@ -4,16 +4,17 @@ import com.example.application.CustomerCommandService;
 import com.example.application.command.AddLoyaltyPointsCommand;
 import com.example.application.command.ChangeCustomerAddressCommand;
 import com.example.application.command.ChangeCustomerEmailCommand;
-import com.example.application.command.ChangeCustomerNameCommand;
+import com.example.application.command.ChangeCustomerFullNameCommand;
 import com.example.application.command.ChangeCustomerPhoneCommand;
 import com.example.application.command.ChangeCustomerStatusCommand;
+import com.example.application.command.ChangeCustomerUserNameCommand;
 import com.example.application.command.RegisterCustomerCommand;
 import com.example.application.command.SubtractLoyaltyPointsCommand;
 import com.example.application.port.DomainEventPublisher;
 import com.example.domain.Customer;
 import com.example.domain.CustomerId;
 import com.example.domain.CustomerRepository;
-import com.example.domain.exception.CustomerNameAlreadyExistsException;
+import com.example.domain.exception.CustomerUserNameAlreadyExistsException;
 import com.example.domain.exception.CustomerNotFoundException;
 import com.example.domain.exception.EmailAlreadyExistsException;
 import com.example.domain.exception.PhoneNumberAlreadyExistsException;
@@ -36,6 +37,7 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
     public void register(RegisterCustomerCommand command) {
         var email = command.email();
         var phone = command.phone();
+        var userName = command.userName();
         log.debug("Registering new customer with email: {}", email.getValue());
 
         if (repository.existsByEmail(email)) {
@@ -44,10 +46,22 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
         if (repository.existsByPhone(phone)) {
             throw new PhoneNumberAlreadyExistsException(phone);
         }
-        var newCustomer = Customer.register(email, phone, command.name(), command.address());
+        if (repository.existsByUserName(userName)) {
+            throw new CustomerUserNameAlreadyExistsException(userName);
+        }
+
+        var newCustomer = Customer.register(
+                email,
+                phone,
+                userName,
+                command.fullName(),
+                command.address()
+        );
 
         saveAndPublishEvents(newCustomer);
-        log.info("Customer registered and events published: {}", newCustomer.getId().getValue());
+        log.info("Customer {} registered, id: {}",
+                userName.getValue(), newCustomer.getId().getValue()
+        );
     }
 
     @Override
@@ -89,17 +103,30 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
     @Override
     @Transactional
     @CacheEvict(value = "customerInfo", key = "#command.id.value")
-    public void changeName(ChangeCustomerNameCommand command) {
+    public void changeUserName(ChangeCustomerUserNameCommand command) {
         var customerId = command.id();
-        log.debug("Changing name for customer: {}", customerId.getValue());
+        log.debug("Changing user name for customer: {}", customerId.getValue());
         var customer = findById(customerId);
         var newName = command.newName();
 
-        if (repository.existsByName(newName)) {
-            throw new CustomerNameAlreadyExistsException(newName);
+        if (repository.existsByUserName(newName)) {
+            throw new CustomerUserNameAlreadyExistsException(newName);
         }
 
-        customer.changeName(newName);
+        customer.changeUserName(newName);
+        saveAndPublishEvents(customer);
+        log.info("User name changed for customer: {}", customerId.getValue());
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = "customerInfo", key = "#command.id.value")
+    public void changeFullName(ChangeCustomerFullNameCommand command) {
+        var customerId = command.id();
+        log.debug("Changing name for customer: {}", customerId.getValue());
+        var customer = findById(customerId);
+
+        customer.changeFullName(command.newName());
         saveAndPublishEvents(customer);
         log.info("Name changed for customer: {}", customerId.getValue());
     }

@@ -2,7 +2,8 @@ package com.example.domain;
 
 import com.example.domain.event.CustomerAddressChangedEvent;
 import com.example.domain.event.CustomerEmailChangedEvent;
-import com.example.domain.event.CustomerNameChangedEvent;
+import com.example.domain.event.CustomerFullNameChangedEvent;
+import com.example.domain.event.CustomerUserNameChangedEvent;
 import com.example.domain.event.CustomerPhoneChangedEvent;
 import com.example.domain.event.CustomerRegisteredEvent;
 import com.example.domain.event.CustomerStatusChangedEvent;
@@ -11,7 +12,8 @@ import com.example.domain.event.LoyaltyPointsAddedEvent;
 import com.example.domain.event.LoyaltyPointsSubtractedEvent;
 import com.example.domain.exception.SameAddressException;
 import com.example.domain.exception.SameEmailException;
-import com.example.domain.exception.SameNameException;
+import com.example.domain.exception.SameFullNameException;
+import com.example.domain.exception.SameUserNameException;
 import com.example.domain.exception.SamePhoneNumberException;
 import com.example.domain.exception.SameStatusException;
 import lombok.AccessLevel;
@@ -33,7 +35,8 @@ public class Customer {
     private final CustomerId id;
     private Email email;
     private PhoneNumber phone;
-    private CustomerName name;
+    private UserName userName;
+    private FullName fullName;
     private CustomerStatus status;
     private Address address;
     private LoyaltyPoints loyaltyPoints;
@@ -41,14 +44,16 @@ public class Customer {
 
     public static Customer register(Email email,
                                     PhoneNumber phone,
-                                    CustomerName name,
+                                    UserName userName,
+                                    FullName fullName,
                                     Address address
     ) {
         var newCustomer = new Customer(
                 CustomerId.of(UUID.randomUUID()),
                 email,
                 phone,
-                name,
+                userName,
+                fullName,
                 CustomerStatus.ACTIVE,
                 address,
                 LoyaltyPoints.ZERO
@@ -59,7 +64,8 @@ public class Customer {
                         .aggregateId(newCustomer.getId().getValue())
                         .email(email.getValue())
                         .phone(phone.getValue())
-                        .name(name.getValue())
+                        .userName(userName.getValue())
+                        .fullName(fullName.getFullName())
                         .build()
         );
         return newCustomer;
@@ -68,11 +74,12 @@ public class Customer {
     public static Customer reconstruct(CustomerId id,
                                        Email email,
                                        PhoneNumber phone,
-                                       CustomerName name,
+                                       UserName userName,
+                                       FullName fullName,
                                        CustomerStatus status,
                                        Address address,
                                        LoyaltyPoints loyaltyPoints) {
-        return new Customer(id, email, phone, name, status, address, loyaltyPoints);
+        return new Customer(id, email, phone, userName, fullName, status, address, loyaltyPoints);
     }
 
     public List<DomainEvent> pullEvents() {
@@ -113,18 +120,34 @@ public class Customer {
         );
     }
 
-    public void changeName(CustomerName newName) {
-        if (this.name.equals(newName)) {
-            throw new SameNameException(newName);
+    public void changeUserName(UserName newName) {
+        if (this.userName.equals(newName)) {
+            throw new SameUserNameException(newName);
         }
 
-        var oldName = this.name;
-        this.name = newName;
+        var oldName = this.userName;
+        this.userName = newName;
         registerEvent(
-                CustomerNameChangedEvent.builder()
+                CustomerUserNameChangedEvent.builder()
                         .aggregateId(this.id.getValue())
                         .oldName(oldName.getValue())
                         .newName(newName.getValue())
+                        .build()
+        );
+    }
+
+    public void changeFullName(FullName newName) {
+        if (this.fullName.equals(newName)) {
+            throw new SameFullNameException(newName);
+        }
+        var oldName = this.fullName;
+        this.fullName = newName;
+
+        registerEvent(
+                CustomerFullNameChangedEvent.builder()
+                        .aggregateId(this.id.getValue())
+                        .oldName(oldName.getFullName())
+                        .newName(newName.getFullName())
                         .build()
         );
     }

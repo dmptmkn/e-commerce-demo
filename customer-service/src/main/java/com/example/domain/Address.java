@@ -10,7 +10,9 @@ import java.util.regex.Pattern;
 public class Address {
 
     private static final String ZIPCODE_REGEX = "^[a-zA-Z0-9\\s-]+$";
+    private static final String ADDRESS_TEXT_REGEX = "^[\\p{L}\\p{N}\\s-]+$";
     private static final Pattern ZIPCODE_PATTERN = Pattern.compile(ZIPCODE_REGEX);
+    private static final Pattern ADDRESS_TEXT_PATTERN = Pattern.compile(ADDRESS_TEXT_REGEX);
     private static final int COUNTRY_MAX_LENGTH = 100;
     private static final int ZIPCODE_MAX_LENGTH = 20;
     private static final int CITY_MAX_LENGTH = 255;
@@ -33,52 +35,80 @@ public class Address {
             String street,
             String building,
             String apartment) {
-        checkIfNullOrBlank("Country", country);
-        var normalizedCountry = country.trim();
-        checkLength("Country name", normalizedCountry, COUNTRY_MAX_LENGTH);
-        this.country = normalizedCountry;
+        this.country = validateAndNormalize(
+                country,
+                COUNTRY_MAX_LENGTH,
+                ADDRESS_TEXT_PATTERN,
+                "Country name"
+        );
 
-        checkIfNullOrBlank("Zipcode", zipcode);
-        var normalizedZipcode = zipcode.trim().toUpperCase();
-        if (!ZIPCODE_PATTERN.matcher(normalizedZipcode).matches()) {
-            throw new InvalidAddressException("Zipcode format is invalid");
-        }
-        checkLength("Zipcode", normalizedZipcode, ZIPCODE_MAX_LENGTH);
-        this.zipcode = normalizedZipcode;
+        this.zipcode = validateAndNormalize(
+                zipcode,
+                ZIPCODE_MAX_LENGTH,
+                ZIPCODE_PATTERN,
+                "Zipcode"
+        ).toUpperCase();
 
-        checkIfNullOrBlank("City", city);
-        var normalizedCity = city.trim();
-        checkLength("City name", normalizedCity, CITY_MAX_LENGTH);
-        this.city = normalizedCity;
 
-        checkIfNullOrBlank("Street", street);
-        var normalizedStreet = street.trim();
-        checkLength("Street name", normalizedStreet, STREET_MAX_LENGTH);
-        this.street = normalizedStreet;
+        this.city = validateAndNormalize(
+                city,
+                CITY_MAX_LENGTH,
+                ADDRESS_TEXT_PATTERN,
+                "City name"
+        );
 
-        checkIfNullOrBlank("Building", building);
-        var normalizedBuilding = building.trim().toUpperCase();
-        checkLength("Building number", normalizedBuilding, BUILDING_MAX_LENGTH);
-        this.building = normalizedBuilding;
+        this.street = validateAndNormalize(
+                street,
+                STREET_MAX_LENGTH,
+                ADDRESS_TEXT_PATTERN,
+                "Street name"
+        );
 
-        var normalizedApartment = apartment == null ? null : apartment.trim().toUpperCase();
-        if (normalizedApartment != null) {
-            checkLength("Apartment number", normalizedApartment, APARTMENT_MAX_LENGTH);
-        }
-        this.apartment = normalizedApartment;
+        this.building = validateAndNormalize(
+                building,
+                BUILDING_MAX_LENGTH,
+                ADDRESS_TEXT_PATTERN,
+                "Building"
+        );
+
+        this.apartment = apartment == null || apartment.isBlank() ? null : validateAndNormalize(
+                apartment,
+                APARTMENT_MAX_LENGTH,
+                ADDRESS_TEXT_PATTERN,
+                "Apartment"
+        );
     }
 
-    private static void checkIfNullOrBlank(String fieldName, String value) {
+    private static String validateAndNormalize(String value,
+                                               int maxLength,
+                                               Pattern pattern,
+                                               String fieldName) {
+        checkIfNullOrBlank(value, fieldName);
+        var normalized = value.trim();
+        checkLength(normalized, maxLength, fieldName);
+        checkIfMatches(normalized, pattern, fieldName);
+        return normalized;
+    }
+
+    private static void checkIfNullOrBlank(String value, String fieldName) {
         if (value == null || value.isBlank()) {
             throw new InvalidAddressException("%s is required".formatted(fieldName));
         }
     }
 
-    private static void checkLength(String fieldName, String value, int maxLength) {
+    private static void checkLength(String value, int maxLength, String fieldName) {
         if (value.length() > maxLength) {
             throw new InvalidAddressException(
                     "%s must not be longer than %d characters, yours is %d"
                             .formatted(fieldName, maxLength, value.length())
+            );
+        }
+    }
+
+    private static void checkIfMatches(String value, Pattern pattern, String fieldName) {
+        if (!pattern.matcher(value).matches()) {
+            throw new InvalidAddressException(
+                    "%s doesn't match the required pattern".formatted(fieldName)
             );
         }
     }

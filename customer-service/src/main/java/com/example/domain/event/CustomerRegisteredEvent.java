@@ -13,18 +13,21 @@ public class CustomerRegisteredEvent implements DomainEvent {
     UUID aggregateId;
     String email;
     String phone;
-    String name;
+    String userName;
+    String fullName;
     Instant occurredAt;
 
     @Builder
     private CustomerRegisteredEvent(@NonNull UUID aggregateId,
                                     @NonNull String email,
                                     @NonNull String phone,
-                                    @NonNull String name) {
+                                    @NonNull String userName,
+                                    @NonNull String fullName) {
         this.aggregateId = aggregateId;
         this.email = email;
         this.phone = phone;
-        this.name = name;
+        this.userName = userName;
+        this.fullName = fullName;
         this.occurredAt = Instant.now();
     }
 

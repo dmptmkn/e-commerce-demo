@@ -8,7 +8,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Value
-public class CustomerNameChangedEvent implements DomainEvent {
+public class CustomerUserNameChangedEvent implements DomainEvent {
 
     UUID aggregateId;
     String oldName;
@@ -16,9 +16,9 @@ public class CustomerNameChangedEvent implements DomainEvent {
     Instant occurredAt;
 
     @Builder
-    private CustomerNameChangedEvent(@NonNull UUID aggregateId,
-                                     @NonNull String oldName,
-                                     @NonNull String newName) {
+    private CustomerUserNameChangedEvent(@NonNull UUID aggregateId,
+                                         @NonNull String oldName,
+                                         @NonNull String newName) {
         this.aggregateId = aggregateId;
         this.oldName = oldName;
         this.newName = newName;
@@ -27,6 +27,6 @@ public class CustomerNameChangedEvent implements DomainEvent {
 
     @Override
     public String getType() {
-        return "CUSTOMER_NAME_CHANGED";
+        return "CUSTOMER_USER_NAME_CHANGED";
     }
 }

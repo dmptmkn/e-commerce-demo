@@ -7,5 +7,5 @@ public interface CustomerRepository {
     Optional<Customer> findById(CustomerId id);
     boolean existsByEmail(Email email);
     boolean existsByPhone(PhoneNumber phone);
-    boolean existsByName(CustomerName name);
+    boolean existsByUserName(UserName name);
 }
