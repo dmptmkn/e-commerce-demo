@@ -1,21 +1,25 @@
 package com.example.domain;
 
 import com.example.domain.event.CustomerAddressChangedEvent;
+import com.example.domain.event.CustomerBlockedEvent;
+import com.example.domain.event.CustomerDeletedEvent;
 import com.example.domain.event.CustomerEmailChangedEvent;
 import com.example.domain.event.CustomerFullNameChangedEvent;
-import com.example.domain.event.CustomerUserNameChangedEvent;
 import com.example.domain.event.CustomerPhoneChangedEvent;
 import com.example.domain.event.CustomerRegisteredEvent;
-import com.example.domain.event.CustomerStatusChangedEvent;
+import com.example.domain.event.CustomerUnblockedEvent;
+import com.example.domain.event.CustomerUserNameChangedEvent;
 import com.example.domain.event.DomainEvent;
 import com.example.domain.event.LoyaltyPointsAddedEvent;
 import com.example.domain.event.LoyaltyPointsSubtractedEvent;
+import com.example.domain.exception.CustomerAlreadyBlockedException;
+import com.example.domain.exception.CustomerAlreadyDeletedException;
+import com.example.domain.exception.CustomerNotBlockedException;
 import com.example.domain.exception.SameAddressException;
 import com.example.domain.exception.SameEmailException;
 import com.example.domain.exception.SameFullNameException;
-import com.example.domain.exception.SameUserNameException;
 import com.example.domain.exception.SamePhoneNumberException;
-import com.example.domain.exception.SameStatusException;
+import com.example.domain.exception.SameUserNameException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -40,6 +44,7 @@ public class Customer {
     private CustomerStatus status;
     private Address address;
     private LoyaltyPoints loyaltyPoints;
+    private boolean deleted;
     private final List<DomainEvent> domainEvents = new ArrayList<>();
 
     public static Customer register(Email email,
@@ -56,7 +61,8 @@ public class Customer {
                 fullName,
                 CustomerStatus.ACTIVE,
                 address,
-                LoyaltyPoints.ZERO
+                LoyaltyPoints.ZERO,
+                false
         );
 
         newCustomer.registerEvent(
@@ -78,8 +84,9 @@ public class Customer {
                                        FullName fullName,
                                        CustomerStatus status,
                                        Address address,
-                                       LoyaltyPoints loyaltyPoints) {
-        return new Customer(id, email, phone, userName, fullName, status, address, loyaltyPoints);
+                                       LoyaltyPoints loyaltyPoints,
+                                       boolean deleted) {
+        return new Customer(id, email, phone, userName, fullName, status, address, loyaltyPoints, deleted);
     }
 
     public List<DomainEvent> pullEvents() {
@@ -89,6 +96,7 @@ public class Customer {
     }
 
     public void changeEmail(Email newEmail) {
+        ensureNotDeleted();
         if (this.email.equals(newEmail)) {
             throw new SameEmailException(newEmail);
         }
@@ -105,6 +113,7 @@ public class Customer {
     }
 
     public void changePhoneNumber(PhoneNumber newNumber) {
+        ensureNotDeleted();
         if (this.phone.equals(newNumber)) {
             throw new SamePhoneNumberException(newNumber);
         }
@@ -121,6 +130,7 @@ public class Customer {
     }
 
     public void changeUserName(UserName newName) {
+        ensureNotDeleted();
         if (this.userName.equals(newName)) {
             throw new SameUserNameException(newName);
         }
@@ -137,6 +147,7 @@ public class Customer {
     }
 
     public void changeFullName(FullName newName) {
+        ensureNotDeleted();
         if (this.fullName.equals(newName)) {
             throw new SameFullNameException(newName);
         }
@@ -153,6 +164,7 @@ public class Customer {
     }
 
     public void changeAddress(Address newAddress) {
+        ensureNotDeleted();
         if (this.address.equals(newAddress)) {
             throw new SameAddressException(newAddress);
         }
@@ -171,21 +183,49 @@ public class Customer {
         );
     }
 
-    public void changeStatus(CustomerStatus newStatus) {
-        if (this.status == newStatus) {
-            throw new SameStatusException(newStatus);
+    public void block(Reason reason) {
+        ensureNotDeleted();
+        if (this.status == CustomerStatus.BLOCKED) {
+            throw new CustomerAlreadyBlockedException(this.id);
         }
+        this.status = CustomerStatus.BLOCKED;
 
-        this.status = newStatus;
-        registerEvent(
-                CustomerStatusChangedEvent.builder()
-                        .aggregateId(this.getId().getValue())
-                        .newStatus(newStatus.name())
-                        .build()
+        registerEvent(CustomerBlockedEvent.builder()
+                .aggregateId(this.getId().getValue())
+                .reason(reason.getValue())
+                .build()
+        );
+    }
+
+    public void unblock(Reason reason) {
+        ensureNotDeleted();
+        if (this.status != CustomerStatus.BLOCKED) {
+            throw new CustomerNotBlockedException(this.id);
+        }
+        this.status = CustomerStatus.ACTIVE;
+
+        registerEvent(CustomerUnblockedEvent.builder()
+                .aggregateId(this.getId().getValue())
+                .reason(reason.getValue())
+                .build()
+        );
+    }
+
+    public void softDelete(Reason reason) {
+        if (this.deleted) {
+            throw new CustomerAlreadyDeletedException(this.id);
+        }
+        this.deleted = true;
+
+        registerEvent(CustomerDeletedEvent.builder()
+                .aggregateId(this.getId().getValue())
+                .reason(reason.getValue())
+                .build()
         );
     }
 
     public void addLoyaltyPoints(int points) {
+        ensureNotDeleted();
         var newBalance = this.loyaltyPoints.add(points);
         this.loyaltyPoints = newBalance;
 
@@ -199,6 +239,7 @@ public class Customer {
     }
 
     public void subtractLoyaltyPoints(int points) {
+        ensureNotDeleted();
         var newBalance = this.loyaltyPoints.subtract(points);
         this.loyaltyPoints = newBalance;
 
@@ -213,5 +254,11 @@ public class Customer {
 
     private void registerEvent(DomainEvent event) {
         domainEvents.add(event);
+    }
+
+    private void ensureNotDeleted() {
+        if (deleted) {
+            throw new CustomerAlreadyDeletedException(this.id);
+        }
     }
 }

@@ -8,22 +8,22 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Value
-public class CustomerStatusChangedEvent implements DomainEvent {
+public class CustomerBlockedEvent implements DomainEvent {
 
     UUID aggregateId;
-    String newStatus;
+    String reason;
     Instant occurredAt;
 
     @Builder
-    private CustomerStatusChangedEvent(@NonNull UUID aggregateId,
-                                       @NonNull String newStatus) {
+    private CustomerBlockedEvent(@NonNull UUID aggregateId,
+                                 @NonNull String reason) {
         this.aggregateId = aggregateId;
-        this.newStatus = newStatus;
+        this.reason = reason;
         this.occurredAt = Instant.now();
     }
 
     @Override
     public String getType() {
-        return "CUSTOMER_STATUS_CHANGED";
+        return "CUSTOMER_BLOCKED";
     }
 }
