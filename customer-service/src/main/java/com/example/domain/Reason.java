@@ -10,7 +10,7 @@ import lombok.Value;
 public class Reason {
 
     private static final int MAX_LENGTH = 500;
-    private static final Reason NONE = new Reason("");
+    private static final Reason NONE = new Reason("none");
 
     String value;
 

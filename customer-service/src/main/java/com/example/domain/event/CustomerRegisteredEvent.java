@@ -1,7 +1,6 @@
 package com.example.domain.event;
 
 import lombok.Builder;
-import lombok.NonNull;
 import lombok.Value;
 
 import java.time.Instant;
@@ -18,11 +17,11 @@ public class CustomerRegisteredEvent implements DomainEvent {
     Instant occurredAt;
 
     @Builder
-    private CustomerRegisteredEvent(@NonNull UUID aggregateId,
-                                    @NonNull String email,
-                                    @NonNull String phone,
-                                    @NonNull String userName,
-                                    @NonNull String fullName) {
+    private CustomerRegisteredEvent(UUID aggregateId,
+                                    String email,
+                                    String phone,
+                                    String userName,
+                                    String fullName) {
         this.aggregateId = aggregateId;
         this.email = email;
         this.phone = phone;
@@ -32,7 +31,12 @@ public class CustomerRegisteredEvent implements DomainEvent {
     }
 
     @Override
-    public String getType() {
+    public String getAggregateType() {
+        return "Customer";
+    }
+
+    @Override
+    public String getEventType() {
         return "CUSTOMER_REGISTERED";
     }
 }

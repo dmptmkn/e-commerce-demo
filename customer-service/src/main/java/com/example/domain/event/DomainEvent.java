@@ -1,10 +1,13 @@
 package com.example.domain.event;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.Instant;
 import java.util.UUID;
 
 public interface DomainEvent {
-    UUID getAggregateId();
+    @JsonIgnore String getAggregateType();
+    @JsonIgnore UUID getAggregateId();
     Instant getOccurredAt();
-    String getType();
+    @JsonIgnore String getEventType();
 }
