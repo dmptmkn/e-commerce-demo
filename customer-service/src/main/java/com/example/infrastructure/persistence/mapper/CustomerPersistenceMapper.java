@@ -26,6 +26,7 @@ public interface CustomerPersistenceMapper {
     @Mapping(target = "version", ignore = true)
     @Mapping(target = "fullName", expression = "java(toEmbeddableFullName(customer.getFullName()))")
     @Mapping(target = "address", expression = "java(toEmbeddableAddress(customer.getAddress()))")
+    @Mapping(target = "deleted", source = "deleted")
     CustomerJpaEntity toJpaEntity(Customer customer);
 
     default Customer toDomainObject(CustomerJpaEntity jpaEntity) {
@@ -37,7 +38,8 @@ public interface CustomerPersistenceMapper {
                 toDomainFullName(jpaEntity.getFullName()),
                 jpaEntity.getStatus(),
                 toDomainAddress(jpaEntity.getAddress()),
-                jpaEntity.getLoyaltyPoints()
+                jpaEntity.getLoyaltyPoints(),
+                jpaEntity.isDeleted()
         );
     }
 

@@ -49,4 +49,7 @@ public class CustomerJpaEntity extends BaseEntity {
 
     @Column(name = "loyalty_points", nullable = false)
     private LoyaltyPoints loyaltyPoints;
+
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted;
 }

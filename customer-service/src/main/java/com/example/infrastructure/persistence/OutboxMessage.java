@@ -2,17 +2,16 @@ package com.example.infrastructure.persistence;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "outbox")
@@ -21,22 +20,27 @@ import java.time.LocalDateTime;
 public class OutboxMessage {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "outbox_id_gen")
-    @SequenceGenerator(name = "outbox_id_gen", sequenceName = "outbox_id_seq", allocationSize = 1)
-    private Long id;
-    @Column(name = "aggregate_id", nullable = false)
+    @UuidGenerator
+    private UUID id;
+    @Column(name = "aggregatetype", nullable = false, length = 100)
+    String aggregateType;
+    @Column(name = "aggregateid", nullable = false)
     private String aggregateId;
-    @Column(name = "event_type", nullable = false)
+    @Column(name = "type", nullable = false)
     private String eventType;
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(name = "payload", columnDefinition = "TEXT", nullable = false)
     private String payload;
     @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "timestamp", updatable = false)
+    private Instant createdAt;
     private boolean sent;
 
     @Builder
-    private OutboxMessage(String aggregateId, String eventType, String payload) {
+    private OutboxMessage(String aggregateType,
+                          String aggregateId,
+                          String eventType,
+                          String payload) {
+        this.aggregateType = aggregateType;
         this.aggregateId = aggregateId;
         this.eventType = eventType;
         this.payload = payload;

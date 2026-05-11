@@ -35,6 +35,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
             entity.setStatus(customer.getStatus());
             entity.setAddress(persistenceMapper.toEmbeddableAddress(customer.getAddress()));
             entity.setLoyaltyPoints(customer.getLoyaltyPoints());
+            entity.setDeleted(customer.isDeleted());
             commandRepository.save(entity);
         } else {
             var newEntity = persistenceMapper.toJpaEntity(customer);
