@@ -2,7 +2,6 @@ package com.example.application.command;
 
 import com.example.domain.CustomerId;
 import com.example.domain.LoyaltyPoints;
-import jakarta.validation.constraints.NotNull;
 
-public record AddLoyaltyPointsCommand(@NotNull CustomerId id, @NotNull LoyaltyPoints points) {
+public record AddLoyaltyPointsCommand(CustomerId id, LoyaltyPoints points) {
 }
