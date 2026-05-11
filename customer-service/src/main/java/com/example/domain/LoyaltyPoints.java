@@ -24,6 +24,7 @@ public class LoyaltyPoints {
     }
 
     public LoyaltyPoints add(int points) {
+        checkNotNegative(points);
         return of(this.value + points);
     }
 

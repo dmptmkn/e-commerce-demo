@@ -4,7 +4,8 @@ import com.example.infrastructure.persistence.OutboxMessage;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface OutboxRepository extends JpaRepository<OutboxMessage, Long> {
+public interface OutboxRepository extends JpaRepository<OutboxMessage, UUID> {
     List<OutboxMessage> findTop100BySentFalseOrderByIdAsc();
 }

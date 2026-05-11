@@ -45,6 +45,9 @@ public class Customer {
     private Address address;
     private LoyaltyPoints loyaltyPoints;
     private boolean deleted;
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private final List<DomainEvent> domainEvents = new ArrayList<>();
 
     public static Customer register(Email email,

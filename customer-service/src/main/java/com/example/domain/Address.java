@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public class Address {
 
     private static final String ZIPCODE_REGEX = "^[a-zA-Z0-9\\s-]+$";
-    private static final String ADDRESS_TEXT_REGEX = "^[\\p{L}\\p{N}\\s-]+$";
+    private static final String ADDRESS_TEXT_REGEX = "^[\\p{L}\\p{N}\\s\\-.,'/#]+$";
     private static final Pattern ZIPCODE_PATTERN = Pattern.compile(ZIPCODE_REGEX);
     private static final Pattern ADDRESS_TEXT_PATTERN = Pattern.compile(ADDRESS_TEXT_REGEX);
     private static final int COUNTRY_MAX_LENGTH = 100;

@@ -17,7 +17,7 @@ import com.example.domain.Customer;
 import com.example.domain.CustomerId;
 import com.example.domain.CustomerRepository;
 import com.example.domain.exception.CustomerNotFoundException;
-import com.example.domain.exception.CustomerUserNameAlreadyExistsException;
+import com.example.domain.exception.UserNameAlreadyExistsException;
 import com.example.domain.exception.EmailAlreadyExistsException;
 import com.example.domain.exception.PhoneNumberAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +49,7 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
             throw new PhoneNumberAlreadyExistsException(phone);
         }
         if (repository.existsByUserName(userName)) {
-            throw new CustomerUserNameAlreadyExistsException(userName);
+            throw new UserNameAlreadyExistsException(userName);
         }
         var newCustomer = Customer.register(
                 email,
@@ -150,7 +150,7 @@ public class CustomerCommandServiceImpl implements CustomerCommandService {
         log.debug("Changing user name for customer: {}", customerId.getValue());
 
         if (repository.existsByUserName(newName)) {
-            throw new CustomerUserNameAlreadyExistsException(newName);
+            throw new UserNameAlreadyExistsException(newName);
         }
 
         customer.changeUserName(newName);
