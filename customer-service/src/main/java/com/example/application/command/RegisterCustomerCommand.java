@@ -1,10 +1,10 @@
 package com.example.application.command;
 
-import com.example.domain.Address;
-import com.example.domain.Email;
-import com.example.domain.FullName;
-import com.example.domain.PhoneNumber;
-import com.example.domain.UserName;
+import com.example.core.domain.valueobject.Address;
+import com.example.core.domain.valueobject.Email;
+import com.example.core.domain.valueobject.FullName;
+import com.example.core.domain.valueobject.PhoneNumber;
+import com.example.core.domain.valueobject.UserName;
 
 public record RegisterCustomerCommand(Email email,
                                       PhoneNumber phone,

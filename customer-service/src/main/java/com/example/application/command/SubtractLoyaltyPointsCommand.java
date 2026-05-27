@@ -1,7 +1,7 @@
 package com.example.application.command;
 
-import com.example.domain.CustomerId;
-import com.example.domain.LoyaltyPoints;
+import com.example.core.domain.valueobject.CustomerId;
+import com.example.core.domain.valueobject.LoyaltyPoints;
 
 public record SubtractLoyaltyPointsCommand(CustomerId id, LoyaltyPoints points) {
 }

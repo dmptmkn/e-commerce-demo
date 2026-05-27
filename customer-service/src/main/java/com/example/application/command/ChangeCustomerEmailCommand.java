@@ -1,7 +1,7 @@
 package com.example.application.command;
 
-import com.example.domain.CustomerId;
-import com.example.domain.Email;
+import com.example.core.domain.valueobject.CustomerId;
+import com.example.core.domain.valueobject.Email;
 
 public record ChangeCustomerEmailCommand(CustomerId id, Email newEmail) {
 }
