@@ -4,10 +4,8 @@ import com.example.core.domain.event.DomainEvent;
 import com.example.core.port.in.DomainEventProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.annotation.BackOff;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.annotation.RetryableTopic;
-import org.springframework.kafka.retrytopic.TopicSuffixingStrategy;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
@@ -50,20 +48,16 @@ public class KafkaDomainEventHandler {
     private final ObjectMapper jsonMapper;
 
     @KafkaListener(topics = "${kafka.topics.customer}")
-    @RetryableTopic(
-            attempts = "4",
-            backOff = @BackOff(delay = 1000, multiplier = 2.0),
-            topicSuffixingStrategy = TopicSuffixingStrategy.SUFFIX_WITH_INDEX_VALUE,
-            dltTopicSuffix = ".DLT"
-    )
     public void handleDomainEvent(@Payload String payloadJson,
                                   @Header("type") String eventTypeHeader,
-                                  @Header("messageId") String messageIdHeader) {
+                                  @Header("messageId") String messageIdHeader,
+                                  Acknowledgment ack) {
         var eventClass = EVENT_TYPE_MAP.get(eventTypeHeader);
         if (eventClass != null) {
             try {
                 var domainEvent = jsonMapper.readValue(payloadJson, eventClass);
                 eventProcessor.handleDomainEvent(domainEvent);
+                ack.acknowledge();
             } catch (Exception e) {
                 log.warn("Failed to send message {}", messageIdHeader, e);
                 throw new RuntimeException("Processing failed", e);
