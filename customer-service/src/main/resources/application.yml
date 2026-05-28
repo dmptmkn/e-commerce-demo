@@ -1,0 +1,66 @@
+spring:
+  application:
+    name: customer-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/customer
+    username: customer
+    password: postgres
+  cache:
+    type: redis
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+  graphql:
+    graphiql:
+      enabled: true
+    schema:
+      locations: classpath:graphql/
+      file-extensions: .graphqls
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      retries: 10
+      acks: all
+      properties:
+        enable.idempotence: true
+        linger.ms: 10
+    consumer:
+      group-id: customer-service-reader
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+      max.poll.interval.ms: 600000
+    listener:
+      ack-mode: MANUAL
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+    timeout: 3000
+
+logging:
+  level:
+    root: INFO
+    com.example.infrastructure.messaging.OutboxProcessor: INFO
+    com.example.adapter.in.graphql.GraphQLResolver: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,beans
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+kafka:
+  topics:
+    customer: customer_monitoring
