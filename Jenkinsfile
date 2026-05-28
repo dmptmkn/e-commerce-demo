@@ -70,9 +70,5 @@ pipeline {
         success {
             echo 'Pipeline succeeded! Application built and tested.'
         }
-        always {
-            // Очистка рабочей области (по желанию)
-            // cleanWs()
-        }
     }
 }
