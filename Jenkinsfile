@@ -40,7 +40,7 @@ pipeline {
             post {
                 always {
                     // Публикуем отчёты о тестах в формате JUnit
-                    junit 'build/test-results/test/*.xml'
+                    junit testResults: '**/build/test-results/test/*.xml', skipIfNoTestFiles: true
                 }
             }
         }
