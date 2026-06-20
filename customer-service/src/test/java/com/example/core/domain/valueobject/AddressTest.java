@@ -17,17 +17,6 @@ class AddressTest {
     private static final String VALID_BUILDING = "7";
     private static final String VALID_APARTMENT = "1";
 
-    private static Address.AddressBuilder defaultBuilder() {
-        return Address.builder()
-                .zipcode(VALID_ZIPCODE)
-                .country(VALID_COUNTRY)
-                .city(VALID_CITY)
-                .street(VALID_STREET)
-                .building(VALID_BUILDING)
-                .apartment(VALID_APARTMENT)
-                .building(VALID_BUILDING);
-    }
-
     @Test
     void shouldCreate_whenAllFieldValid() {
         var address = defaultBuilder().apartment(VALID_APARTMENT).build();
@@ -81,5 +70,16 @@ class AddressTest {
                 .isInstanceOf(InvalidAddressException.class)
                 .hasMessage("Zipcode is required");
 
+    }
+
+    private static Address.AddressBuilder defaultBuilder() {
+        return Address.builder()
+                .zipcode(VALID_ZIPCODE)
+                .country(VALID_COUNTRY)
+                .city(VALID_CITY)
+                .street(VALID_STREET)
+                .building(VALID_BUILDING)
+                .apartment(VALID_APARTMENT)
+                .building(VALID_BUILDING);
     }
 }

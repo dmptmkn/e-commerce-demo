@@ -31,7 +31,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(CustomerWebMapperImpl.class)
 class CustomerRestControllerTest {
 
-    private static final String VALID_REGISTER_REQUEST = """
+    @Autowired
+    MockMvc mockMvc;
+    @Autowired
+    ObjectMapper jsonMapper;
+    @MockitoBean
+    CustomerCommandPort commandPort;
+
+    @Nested
+    class RegistrationTest {
+
+        private static final String VALID_REGISTER_REQUEST = """
             {
                 "email": "test@test.com",
                 "phone": "+78002002316",
@@ -46,16 +56,6 @@ class CustomerRestControllerTest {
                 "apartment": "1"
             }
             """;
-
-    @Autowired
-    MockMvc mockMvc;
-    @Autowired
-    ObjectMapper jsonMapper;
-    @MockitoBean
-    CustomerCommandPort commandPort;
-
-    @Nested
-    class RegistrationTest {
 
         @Test
         void shouldRegister_whenRequestValid() throws Exception {

@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class CustomerCommandServiceTest {
 
-    private final static CustomerId ID = CustomerId.of(UUID.fromString("79289795-31ae-44c5-9fe1-5697e0bbc223"));
+    private final static CustomerId ID = CustomerId.of(UUID.randomUUID());
     private final static Email EMAIL = Email.of("test@test.com");
     private final static PhoneNumber PHONE_NUMBER = PhoneNumber.of("+78002002316");
     private final static UserName USER_NAME = UserName.of("test");
@@ -53,14 +53,6 @@ class CustomerCommandServiceTest {
             .building("7")
             .apartment("1")
             .build();
-    private final static RegisterCustomerCommand REGISTER_CUSTOMER_COMMAND = new RegisterCustomerCommand(
-            EMAIL,
-            PHONE_NUMBER,
-            USER_NAME,
-            FULL_NAME,
-            ADDRESS
-    );
-    private final static BlockCustomerCommand BLOCK_CUSTOMER_COMMAND = new BlockCustomerCommand(ID, Reason.none());
 
     @Mock
     private Customer mockCustomer;
@@ -73,6 +65,14 @@ class CustomerCommandServiceTest {
 
     @Nested
     class RegistrationTests {
+
+        private final static RegisterCustomerCommand REGISTER_CUSTOMER_COMMAND = new RegisterCustomerCommand(
+                EMAIL,
+                PHONE_NUMBER,
+                USER_NAME,
+                FULL_NAME,
+                ADDRESS
+        );
 
         @Test
         void shouldRegister_whenAllDataIsUnique() {
@@ -175,6 +175,8 @@ class CustomerCommandServiceTest {
     @Nested
     class BlockingTest {
 
+        private final static BlockCustomerCommand BLOCK_CUSTOMER_COMMAND = new BlockCustomerCommand(ID, Reason.none());
+
         @Test
         void shouldBlock_whenAllDataIsValid() {
             when(repository.findById(ID)).thenReturn(Optional.of(mockCustomer));
@@ -194,8 +196,14 @@ class CustomerCommandServiceTest {
             verify(eventPublisher).publish(eventArgumentCaptor.capture());
             var publishedEvent = eventArgumentCaptor.getValue();
             assertThat(publishedEvent)
-                    .extracting(CustomerBlockedEvent::getAggregateId, CustomerBlockedEvent::getReason)
-                    .containsExactly(ID.getValue(), BLOCK_CUSTOMER_COMMAND.reason().getValue());
+                    .extracting(
+                            CustomerBlockedEvent::getAggregateId,
+                            CustomerBlockedEvent::getReason
+                    )
+                    .containsExactly(
+                            ID.getValue(),
+                            BLOCK_CUSTOMER_COMMAND.reason().getValue()
+                    );
         }
 
         @Test

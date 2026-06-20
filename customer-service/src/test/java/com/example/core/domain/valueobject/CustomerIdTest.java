@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CustomerIdTest {
 
@@ -15,7 +15,7 @@ class CustomerIdTest {
         var id = UUID.randomUUID();
         var customerId = CustomerId.of(id);
 
-        assertEquals(id, customerId.getValue());
+        assertThat(id).isEqualTo(customerId.getValue());
     }
 
     @Test
