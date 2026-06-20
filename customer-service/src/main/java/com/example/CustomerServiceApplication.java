@@ -7,6 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class CustomerServiceApplication {
 
     public static void main(String[] args) {
-        var applicationContext = SpringApplication.run(CustomerServiceApplication.class, args);
+        SpringApplication.run(CustomerServiceApplication.class, args);
     }
 }

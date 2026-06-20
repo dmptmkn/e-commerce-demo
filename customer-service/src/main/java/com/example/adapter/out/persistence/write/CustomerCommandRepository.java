@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-interface CustomerCommandRepository extends JpaRepository<CustomerJpaEntity, UUID> {
+public interface CustomerCommandRepository extends JpaRepository<CustomerJpaEntity, UUID> {
     boolean existsByEmail(Email email);
     boolean existsByPhone(PhoneNumber phone);
     boolean existsByUserName(UserName name);
